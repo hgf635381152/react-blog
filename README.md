@@ -1,2 +1,0 @@
-# react-blog
-private blog
