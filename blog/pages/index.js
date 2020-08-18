@@ -2,12 +2,12 @@ import React, { useState } from 'react'
 // import Link from 'next/link'
 import Head from 'next/head'
 import { Row, Col, List } from 'antd'
-import Header from '../components/Header'
-import '../styles/pages/index.css'
-import Author from '../components/Author'
 import IconFont from '../utils/iconfont'
-
-
+import Header from '../components/Header'
+import Advert from '../components/Advert'
+import Author from '../components/Author'
+import Footer from '../components/Footer'
+import '../styles/pages/index.css'
 
 
 const Home = () => {
@@ -37,9 +37,9 @@ const Home = () => {
               <List.Item>
                 <div className="list-title">{item.title}</div>
                 <div className="list-icon">
-                  <span><IconFont type="iconriqi" />2020-08-17  </span>
-                  <span><IconFont type="iconshiyongjiaocheng" />视频教程  </span>
-                  <span><IconFont type="iconkeliuredu" />5864人  </span>
+                  <span><IconFont type="iconriqi" />2020-08-17 </span>
+                  <span><IconFont type="iconshiyongjiaocheng" />视频教程 </span>
+                  <span><IconFont type="iconkeliuredu" />5864人 </span>
                 </div>
                 <div className="list-content">{item.content}</div>
               </List.Item>
@@ -48,8 +48,10 @@ const Home = () => {
         </Col>
         <Col className="common-right" xs={0} sm={0} md={7} lg={5} xl={4}>
           <Author />
+          <Advert />
         </Col>
       </Row>
+      <Footer />
     </>
   )
 }
