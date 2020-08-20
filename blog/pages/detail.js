@@ -9,16 +9,25 @@ import Author from '../components/Author'
 import Footer from '../components/Footer'
 import Advert from '../components/Advert'
 import '../styles/pages/detail.css'
-import ReactMarkdown from 'react-markdown'
-import MarkNav from 'markdown-navbar'
 import 'markdown-navbar/dist/navbar.css'
 import marked from 'marked'
 import hljs from 'highlight.js'
 import 'highlight.js/styles/monokai-sublime.css'
+import Tocify from '../components/tocify.tsx'
+import servicePath from '../config/api'
+
+
 
 const Detail = (props) => {
 
+  const tocify = new Tocify()
   const renderer = new marked.Renderer()
+
+  renderer.heading = function(text, level, raw) {
+    const anchor = tocify.add(text, level)
+    return `<a id="${anchor}" href="#${anchor}" class="anchor-fix"><h${level}>${text}</h${level}></a>` 
+  }
+
   marked.setOptions({
     renderer: renderer,
     gfm: true,
@@ -45,9 +54,9 @@ const Detail = (props) => {
           <div>
             <div className="bread-div">
               <Breadcrumb>
-                <Breadcrumb.Item><a href="/">首页</a></Breadcrumb.Item>
+                <Breadcrumb.Item><a href="/">博客首页</a></Breadcrumb.Item>
                 <Breadcrumb.Item>视频教程</Breadcrumb.Item>
-                <Breadcrumb.Item>xxx</Breadcrumb.Item>
+                <Breadcrumb.Item>生活日常</Breadcrumb.Item>
               </Breadcrumb>
             </div>
             <div>
@@ -72,11 +81,9 @@ const Detail = (props) => {
           <Affix offsetTop={5}>
             <div className="detailed-nav common-box">
               <div className="nav-title">文章目录</div>
-              <MarkNav
-                className="article-menu"
-                source={html}
-                ordered={false}
-              />
+              <div className="toc-list">
+                {tocify && tocify.render()}
+              </div>
             </div>
           </Affix>
         </Col>
@@ -87,18 +94,14 @@ const Detail = (props) => {
 }
 
 Detail.getInitialProps = async (context) => {
-  console.log(context.query.id)
-
   let id = context.query.id
-
   const promise = new Promise((reslove) => {
-    axios('http://localhost:7001/default/getArticleById/' + id)
+    axios(servicePath.getArticleById + id)
     .then((res) => {
       console.log(res.data)
       reslove(res.data.data[0])
     })
   })
-
   return await promise
 }
 
