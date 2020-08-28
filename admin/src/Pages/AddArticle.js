@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import marked, { use } from 'marked'
 import '../styles/AddArticle.css'
-import { Row, Col, Input, Select, Button, DatePicker } from 'antd'
+import { Row, Col, Input, Select, Button, DatePicker, message } from 'antd'
 import axios from 'axios'
 import servicePath from '../config/api'
 
@@ -20,7 +20,7 @@ function AddArticle(props) {
   const [showDate, setShowDate] = useState()   //发布日期
   const [updateDate, setUpdateDate] = useState() //修改日志的日期
   const [typeInfo, setTypeInfo] = useState([]) // 文章类别信息
-  const [selectedType, setSelectType] = useState(1) //选择的文章类别
+  const [selectedType, setSelectType] = useState('请选择类型') //选择的文章类别
 
   useEffect(() => {
     getTypeInfo()
@@ -67,21 +67,92 @@ function AddArticle(props) {
     )
   }
 
+  const selectTypeHandle = (value) => {
+    setSelectType(value)
+  }
+
+  const saveArticle = () => {
+    if (!selectedType) {
+      message.error('必须选择文章类型')
+      return false
+    } else if (!articleTitle) {
+      message.error('文章标题不能为空')
+      return false
+    } else if (!articleContent) {
+      message.error('文章内容不能为空')
+      return false
+    } else if (!introducemd) {
+      message.error('文章简介不能为空')
+      return false
+    } else if (!showDate) {
+      message.error('发布日期不能为空')
+      return false
+    }
+    let dataProps = {}
+    dataProps.type_id = selectedType
+    dataProps.title = articleTitle
+    dataProps.article_content = articleContent
+    dataProps.introduce = introducemd
+    let datetext = showDate.replace('-', '/') //把字符串转换成时间戳
+    dataProps.addTime = (new Date(datetext).getTime()) / 1000
+
+    if (articleId == 0) {
+      console.log('articleId=:' + articleId)
+      dataProps.view_count = Math.ceil(Math.random() * 100) + 1000
+      axios({
+        method: 'post',
+        url: servicePath.addArticle,
+        data: dataProps,
+        withCredentials: true
+      }).then(
+        res => {
+          setArticleId(res.data.insertId)
+          if (res.data.isSuccess) {
+            message.success('文章保存成功')
+          } else {
+            message.error('文章保存失败');
+          }
+        }
+      )
+    }else {
+      dataProps.id = articleId
+      axios({
+        method: 'post',
+        url: servicePath.updateArticle,
+        header: { 'Access-Control-Allow-Origin': '*' },
+        data: dataProps,
+        withCredentials: true
+      }).then(
+        res => {
+          if (res.data.isScuccess) {
+            message.success('文章保存成功')
+          } else {
+            message.error('保存失败');
+          }
+        }
+      )
+    }
+
+  }
+
   return (
     <Row gutter={5}>
       <Col span={18}>
         <Row gutter={10} >
           <Col span={20}>
             <Input
+              value={articleTitle}
               placeholder="博客标题"
-              size="large" />
+              size="large" 
+              onChange={e => {setArticleTitle(e.target.value)}}
+            />
           </Col>
           <Col span={4}>
-            <Select defaultValue={selectedType} size="large">
+            <Select defaultValue={selectedType} size="large" onChange={selectTypeHandle}>
               {
                 typeInfo.map((item, index) => {
                   return (
-                    <Option key={index} value={item.id}>{item.typeName}</Option>
+                    <Option key={index} value={item.Id}>{item.typeName}</Option>
                   )
                 })
               }
@@ -112,7 +183,7 @@ function AddArticle(props) {
         <Row>
           <Col span="24">
             <Button size="large">暂存文章</Button>
-            <Button type="primary" size="large">发布文章</Button>
+            <Button type="primary" size="large" onClick={saveArticle}>发布文章</Button>
             <br/>
           </Col>
           <Col span="24">
@@ -132,6 +203,7 @@ function AddArticle(props) {
           <Col span={12}>
             <div className="date-select">
               <DatePicker
+                onChange={(date, dateString) => {setShowDate(dateString)}}
                 placeholder="发布日期"
                 size="large"
               />
