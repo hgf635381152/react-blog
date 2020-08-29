@@ -5,17 +5,27 @@ import IconFont from '../utils/iconfont'
 import 'antd/dist/antd.css'
 import { Route } from 'react-router-dom'
 import AddArticle from './AddArticle'
+import ArticleList from './ArticleList'
 
 
 const { Header, Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
 
-function Admin() {
+function Admin(props) {
 
   const [collapsed, setCollapsed] = useState(false)
   const onCollapse = collapsed => {
     setCollapsed(collapsed)
   };
+
+  const handleClickArticle = e => {
+    console.log(e.item.props)
+    if (e.key == 'addArticle') {
+      props.history.push('/admin/add')
+    } else {
+      props.history.push('/admin/list')
+    }
+  }
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
@@ -32,6 +42,7 @@ function Admin() {
           </Menu.Item>
           <SubMenu
             key="sub1"
+            onClick={handleClickArticle}
             title={
               <span>
                 <IconFont type="iconzuixinwenzhang_huaban" />
@@ -39,8 +50,8 @@ function Admin() {
               </span>
             }
           >
-            <Menu.Item key="3">添加文章</Menu.Item>
-            <Menu.Item key="4">文章列表</Menu.Item>
+            <Menu.Item key="addArticle">添加文章</Menu.Item>
+            <Menu.Item key="ArticleList">文章列表</Menu.Item>
           </SubMenu>
           <Menu.Item key="9">
             <IconFont type="iconhuabanfuben" />
@@ -57,6 +68,8 @@ function Admin() {
           <div style={{ padding: 24, background: '#fff', minHeight: 360 }}>
             <div>
               <Route path="/admin" exact component={AddArticle} />
+              <Route path="/admin/add/" exact component={AddArticle} />
+              <Route path="/admin/list/" exact component={ArticleList} />
             </div>
           </div>
         </Content>
