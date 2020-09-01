@@ -70,6 +70,7 @@ function Admin(props) {
               <Route path="/admin" exact component={AddArticle} />
               <Route path="/admin/add/" exact component={AddArticle} />
               <Route path="/admin/list/" exact component={ArticleList} />
+              <Route path="/admin/add/:id" exact component={AddArticle} />
             </div>
           </div>
         </Content>

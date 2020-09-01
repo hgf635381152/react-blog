@@ -2,11 +2,55 @@ import React, { useState, useEffect } from 'react'
 import { List, Row, Col, Modal, Button, message } from 'antd'
 import axios from 'axios'
 import servicePath from '../config/api'
+import '../styles/ArticleList.css'
+
 const { confirm } = Modal
 
 
 function ArticleList(props) {
   const [ list, setList ] = useState([])
+
+  const getList = () => {
+    axios({
+      method: 'get',
+      url: servicePath.getArticleList,
+      withCredentials: true
+    })
+    .then(
+      res => {
+        console.log(res.data.list)
+        setList(res.data.list)
+      }
+    )
+  }
+
+  //删除文章的方法
+  const delArticle = (id) => {
+    confirm({
+      title: '确定要删除这篇博客文章吗?',
+      content: '如果您确认，文章将会永远被删除，无法恢复。',
+      onOk() {
+        axios(servicePath.delArticle + id, { withCredentials: true }).then(
+          res => {
+            message.success('文章删除成功')
+            getList()
+          }
+        )
+      },
+      onCancel() {
+        message.success('没有任何改变')
+      },
+    });
+  }
+
+  //修改文章
+  const updateArticle = (id, checked) => {
+    props.history.push('/admin/add/' + id)
+  }
+
+  useEffect(() => {
+    getList()
+  }, [])
 
   return (
     <div>
@@ -33,7 +77,7 @@ function ArticleList(props) {
         bordered
         dataSource={list}
         renderItem={item => (
-          <List.item>
+          <List.Item>
             <Row className="list-div">
               <Col span={8}>
                 {item.title}
@@ -48,11 +92,11 @@ function ArticleList(props) {
                 {item.view_count}
               </Col>
               <Col span={4}>
-                <Button type="primary">修改</Button>
-                <Button>删除</Button>
+                <Button type="primary" onClick={() => {updateArticle(item.id)}}>修改</Button>
+                <Button onClick={() => { delArticle(item.id) }} >删除 </Button>
               </Col>
             </Row>
-          </List.item>
+          </List.Item>
         )}
       />
     </div>

@@ -132,8 +132,35 @@ function AddArticle(props) {
         }
       )
     }
-
   }
+
+  const getArticleById = (id) => {
+    axios(servicePath.getArticleById + id, {
+      withCredentials: true,
+    }).then(
+      res => {
+        //let articleInfo= res.data.data[0]
+        setArticleTitle(res.data.data[0].title)
+        setArticleContent(res.data.data[0].article_content)
+        let html = marked(res.data.data[0].article_content)
+        setMarkdownContent(html)
+        setIntroducemd(res.data.data[0].introduce)
+        let tmpInt = marked(res.data.data[0].introduce)
+        setIntroducehtml(tmpInt)
+        setShowDate(res.data.data[0].addTime)
+        setSelectType(res.data.data[0].typeId)
+      }
+    )
+  }
+
+  useEffect(() => {
+    getTypeInfo()
+    let tmpId = props.match.params.id
+    if (tmpId) {
+      setArticleId(tmpId)
+      getArticleById(tmpId)
+    }
+  }, [])
 
   return (
     <Row gutter={5}>
@@ -148,7 +175,7 @@ function AddArticle(props) {
             />
           </Col>
           <Col span={4}>
-            <Select defaultValue={selectedType} size="large" onChange={selectTypeHandle}>
+            <Select defaultValue={selectedType} value={selectedType} size="large" onChange={selectTypeHandle}>
               {
                 typeInfo.map((item, index) => {
                   return (
@@ -166,6 +193,7 @@ function AddArticle(props) {
               className="markdown-content"
               rows={35}
               placeholder="文章内容"
+              value={articleContent}
               onChange={changeContent}
             />
           </Col>
@@ -191,6 +219,7 @@ function AddArticle(props) {
             <TextArea
               rows={4}
               placeholder="文章简介"
+              value={introducemd}
               onChange={changeIntroduce}
             ></TextArea>
             <br/><br/>
@@ -204,6 +233,7 @@ function AddArticle(props) {
             <div className="date-select">
               <DatePicker
                 onChange={(date, dateString) => {setShowDate(dateString)}}
+                // value={showDate}
                 placeholder="发布日期"
                 size="large"
               />
