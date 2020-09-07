@@ -10,14 +10,15 @@ const Author = () => {
         学生，前端持续学习中，睡觉爱好者
         <Divider>社交账号</Divider>
         <Avatar size={28} className="account">
-          <IconFont type="iconGitHub" />
+          <a href="https://github.com/hgf635381152" target="_blank" rel="noopener noreferrer"><IconFont title="https://github.com/hgf635381152" type="iconGitHub" /></a>
         </Avatar>
-        <Avatar size={28} className="account">
+        <Avatar size={28} className="account account-qq">
           <IconFont type="iconQQ" />
         </Avatar>
         <Avatar size={28} className="account">
           <IconFont type="iconwechat" />
         </Avatar>
+        
       </div>
     </div>
   )
